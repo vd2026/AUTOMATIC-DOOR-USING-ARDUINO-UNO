@@ -1,0 +1,30 @@
+#include <Servo.h>
+
+Servo doorServo;        // Create a Servo object
+int irSensorPin = 2;    // IR sensor output pin connected to digital pin 2
+int irSensorValue;      // To store IR sensor reading
+int servoPin = 9;       // Servo connected to pin 9
+
+bool isOpen = false;
+
+void setup() {
+  doorServo.attach(servoPin);
+  pinMode(irSensorPin, INPUT);
+  doorServo.write(0);   // Initial position (door closed)
+  Serial.begin(9600);
+}
+
+void loop() {
+  irSensorValue = digitalRead(irSensorPin);
+  Serial.println(irSensorValue);
+
+  if (irSensorValue == LOW && !isOpen) {  // Object detected (LOW = Obstacle present)
+    doorServo.write(90);    // Open the door
+    isOpen = true;
+    delay(2000);            // Optional delay to let person pass
+  } 
+  else if (irSensorValue == HIGH && isOpen) {  // No object detected
+    doorServo.write(0);     // Close the door
+    isOpen = false;
+    delay(2000);
+  }
